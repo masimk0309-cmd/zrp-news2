@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Зареченск RP — Официальные Новости</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #0f0f12; color: #e2e8f0; line-height: 1.6; padding-bottom: 60px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; background-color: #15151a; border-bottom: 2px solid #22222b; }
+        .logo { font-size: 24px; font-weight: 900; letter-spacing: 2px; color: #ffffff; }
+        .auth-zone { display: flex; align-items: center; gap: 15px; }
+        .btn-discord { background-color: #5865F2; color: white; border: none; padding: 10px 24px; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .btn-discord:hover { background-color: #4752C4; }
+        .user-profile { display: none; align-items: center; gap: 12px; background: #1b1b22; padding: 6px 16px; border-radius: 20px; border: 1px solid #2b2b36; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: #5865F2; }
+        .role-badge { font-size: 11px; background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+        .role-badge.eventor { background: #10b981; }
+        .btn-get-role { background: #22222b; color: #cbd5e1; border: 1px solid #333344; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+        .btn-logout { background: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 13px; margin-left: 5px; }
+        .container { max-width: 850px; margin: 40px auto; padding: 0 20px; }
+        .admin-panel { display: none; background: #15151a; border: 1px solid #2b2b36; border-radius: 14px; padding: 25px; margin-bottom: 40px; }
+        .panel-title { font-size: 18px; margin-bottom: 15px; color: #10b981; font-weight: bold; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 14px; color: #94a3b8; }
+        .form-control { width: 100%; background: #1b1b22; border: 1px solid #2b2b36; border-radius: 8px; padding: 11px; color: white; outline: none; }
+        .btn-publish { background: #10b981; color: white; border: none; padding: 10px 22px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .feed-title { font-size: 24px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .event-post { background-color: #15151a; border-radius: 16px; border: 1px solid #22222b; overflow: hidden; margin-bottom: 40px; }
+        .post-image-container { width: 100%; max-height: 450px; overflow: hidden; background-color: #1b1b22; }
+        .post-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .post-content { padding: 35px; }
+        .post-tag { display: inline-block; background-color: rgba(99, 102, 241, 0.15); color: #818cf8; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: 1px; margin-bottom: 15px; }
+        .post-title { font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 25px; line-height: 1.3; }
+        .post-text { color: #cbd5e1; font-size: 16px; white-space: pre-line; }
+        .comments-section { background: #121216; border-top: 1px solid #22222b; padding: 25px 35px; }
+        .comments-title { font-size: 16px; margin-bottom: 15px; color: #fff; font-weight: bold; }
+        .comment-form { display: flex; gap: 10px; margin-bottom: 20px; }
+        .comment-input { flex: 1; background: #1b1b22; border: 1px solid #2b2b36; padding: 12px 15px; color: white; border-radius: 8px; outline: none; }
+        .btn-comment { background: #6366f1; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .comment-item { background: #1b1b22; padding: 14px 18px; border-radius: 8px; border: 1px solid #22222b; margin-bottom: 10px; }
+        .comment-author { font-weight: bold; font-size: 14px; color: #818cf8; }
+        .comment-text { color: #cbd5e1; font-size: 15px; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">ЗАРЕЧЕНСК RP</div>
+        <div class="auth-zone">
+            <button id="loginBtn" class="btn-discord" onclick="redirectToDiscord()">Войти</button>
+            <div id="userProfile" class="user-profile">
+                <img id="userAvatar" class="avatar" src="" alt="Avatar">
+                <span id="userName" style="font-weight: 600; color: #fff;">Загрузка...</span>
+                <span id="userRole" class="role-badge">Игрок</span>
+                <button id="roleBtn" class="btn-get-role" onclick="activatePromo()">Получить роль</button>
+                <button class="btn-logout" onclick="logout()">Выйти</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="adminPanel" class="admin-panel">
+            <div class="panel-title">🛠 Панель Ивентолога: Создать новость</div>
+            <div class="form-group"><label>Имя файла картинки</label><input type="text" id="newPostImg" class="form-control" placeholder="event.jpg"></div>
+            <div class="form-group"><label>Заголовок поста</label><input type="text" id="newPostTitle" class="form-control" placeholder="ИВЕНТ..."></div>
+            <div class="form-group"><label>Текст объявления</label><textarea id="newPostText" rows="6" class="form-control"></textarea></div>
+            <button class="btn-publish" onclick="publishNews()">Опубликовать новость</button>
+        </div>
+        <h2 class="feed-title">Новости проекта</h2>
+        <div id="newsFeed"></div>
+    </div>
+
+    <script>
+        const CLIENT_ID = '1508914391243030610';
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
+        function redirectToDiscord() {
+            window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
+        }
+        const defaultNews = [{ id: 1001, title: 'ИВЕНТ: "Автошкола"', image: 'event.jpg', text: 'Уважаемые игроки!' }];
+        let newsList = JSON.parse(localStorage.getItem('zrp_news_db')) || defaultNews;
+        let commentsList = JSON.parse(localStorage.getItem('zrp_comments_db')) || {};
+        let localUser = JSON.parse(localStorage.getItem('zrp_current_user')) || null;
+        window.onload = function() { checkDiscordCallback(); updateUI(); renderFeed(); };
+        function checkDiscordCallback() {
+            const fragment = new URLSearchParams(window.location.hash.slice(1));
+            const accessToken = fragment.get('access_token');
+            if (accessToken) {
+                window.location.hash = '';
+                fetch('https://discord.com/api/users/@me', { headers: { 'Authorization': `Bearer ${accessToken}` } })
+                .then(res => res.json()).then(data => {
+                    if(data.username) {
+                        localUser = { username: data.username, avatar: data.avatar ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png', isEventor: localStorage.getItem(`role_${data.username}`) === 'true' };
+                        localStorage.setItem('zrp_current_user', JSON.stringify(localUser));
+                        updateUI(); renderFeed();
+                    }
+                });
+            }
+        }
+        function updateUI() {
+            const loginBtn = document.getElementById('loginBtn');
+            const userProfile = document.getElementById('userProfile');
+            const adminPanel = document.getElementById('adminPanel');
+            if (localUser) {
+                loginBtn.style.display = 'none'; userProfile.style.display = 'flex';
+                document.getElementById('userName').innerText = localUser.username;
+                document.getElementById('userAvatar').src = localUser.avatar;
+                if (localUser.isEventor) {
+                    document.getElementById('userRole').innerText = 'Ивентолог';
+                    document.getElementById('userRole').className = 'role-badge eventor';
+                    document.getElementById('roleBtn').style.display = 'none';
+                    adminPanel.style.display = 'block';
+                } else {
+                    document.getElementById('userRole').innerText = 'Игрок';
+                    document.getElementById('userRole').className = 'role-badge';
+                    document.getElementById('roleBtn').style.display = 'inline-block';
+                    adminPanel.style.display = 'none';
+                }
+            } else { loginBtn.style.display = 'flex'; userProfile.style.display = 'none'; adminPanel.style.display = 'none'; }
+        }
+        function activatePromo() {
+            const code = prompt("Введите промокод:");
+            if (code === "Iventolog_zrp") {
+                alert("Доступ Ивентолога активирован!");
+                localUser.isEventor = true;
+                localStorage.setItem('zrp_current_user', JSON.stringify(localUser));
+                localStorage.setItem(`role_${localUser.username}`, 'true');
+                updateUI();
+            } else if (code !== null) { alert("Неверный промокод!"); }
+        }
+        function logout() { localStorage.removeItem('zrp_current_user'); localUser = null; updateUI(); renderFeed(); }
+        function publishNews() {
+            const title = document.getElementById('newPostTitle').value.trim();
+            const text = document.getElementById('newPostText').value.trim();
+            let img = document.getElementById('newPostImg').value.trim() || 'event.jpg';
+            if (!title || !text) { alert("Заполните поля!"); return; }
+            newsList.unshift({ id: Date.now(), title, image: img, text });
+            localStorage.setItem('zrp_news_db', JSON.stringify(newsList));
+            renderFeed();
+        }
+        function renderFeed() {
+            const feed = document.getElementById('newsFeed'); feed.innerHTML = '';
+            newsList.forEach(post => {
+                feed.innerHTML += `<article class="event-post"><div class="post-image-container"><img src="${post.image}" class="post-image"></div><div class="post-content"><div class="post-tag">ТЕКУЩИЙ ИВЕНТ</div><h3 class="post-title">${post.title}</h3><div class="post-text">${post.text}</div></div></article>`;
+            });
+        }
+    </script>
+</body>
+</html>
